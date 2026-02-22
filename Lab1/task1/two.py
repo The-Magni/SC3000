@@ -1,3 +1,8 @@
+"""
+Reference about Resource Constraint Shortest Path Problem:
+https://www.emergentmind.com/topics/resource-constrained-shortest-path-problem-rcspp
+"""
+
 from queue import PriorityQueue
 from typing import Dict, List, Tuple
 
@@ -18,7 +23,7 @@ def constraint_satisfying_ucs(
     pq: PriorityQueue[Tuple[float, Tuple[str, int]]] = (
         PriorityQueue()
     )  # priority = distance, key = (node, energy)
-    best: Dict[str, List[Tuple[float, int]]] = {
+    domninating_labels: Dict[str, List[Tuple[float, int]]] = {
         node: [] for node in G
     }  # store the possible shortest path and lowest energy of a node
     pq.put((0.0, (start_node, 0)))
@@ -26,7 +31,7 @@ def constraint_satisfying_ucs(
     while not pq.empty():
         _, (u, energy) = pq.get()
         if (u, energy) not in path_cost:
-            continue  # this state already obsoleted
+            continue  # this state already get pruned
         if u == end_node:
             return pi, path_cost[(u, energy)], energy
         for v in G[u]:
@@ -37,13 +42,14 @@ def constraint_satisfying_ucs(
                 or path_cost_v < path_cost[(v, energy_v)]
             ):
                 is_pruned = False
-                new_best_v = []
-                for possible_dist, possible_energy in best[v]:
+                new_labels_v = []
+                for possible_dist, possible_energy in domninating_labels[v]:
                     if path_cost_v >= possible_dist and energy_v >= possible_energy:
                         is_pruned = True
-                        break
                     if possible_dist < path_cost_v or possible_energy < energy_v:
-                        new_best_v.append((possible_dist, possible_energy))
+                        new_labels_v.append(
+                            (possible_dist, possible_energy)
+                        )  # pruning the old labels
 
                 if is_pruned:
                     path_cost.pop((v, energy_v), None)
@@ -52,8 +58,10 @@ def constraint_satisfying_ucs(
                     path_cost[(v, energy_v)] = path_cost_v
                     pi[(v, energy_v)] = (u, energy)
                     pq.put((path_cost_v, (v, energy_v)))
-                    best[v] = new_best_v
-                    best[v].append((path_cost_v, energy_v))
+                    domninating_labels[v] = new_labels_v
+                    domninating_labels[v].append(
+                        (path_cost_v, energy_v)
+                    )  # add new label
 
     # no path found to goal node
     return pi, float("inf"), 0
