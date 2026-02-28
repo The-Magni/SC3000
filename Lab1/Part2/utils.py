@@ -6,6 +6,7 @@ START = (0, 0)
 GOAL = (4, 4)
 BLOCKS = {(1, 2), (3, 2)}
 STATES = [(x, y) for x in range(N) for y in range(N) if (x, y) not in BLOCKS]
+GAMMA = 0.9
 
 # Actions and movement
 ACTIONS = ["U", "D", "L", "R"]
@@ -15,6 +16,26 @@ DELTA = {"U": (0, 1), "D": (0, -1), "L": (-1, 0), "R": (1, 0)}
 STEP_COST = -1
 GOAL_REWARD = 10
 ARROW = {"U": "↑", "D": "↓", "L": "←", "R": "→", None: "·"}
+
+
+def greedy_policy_from_Q(Q):
+    pi = {}
+    for s in STATES:
+        if is_terminal(s):
+            pi[s] = None
+        else:
+            pi[s] = max(ACTIONS, key=lambda a: Q[(s, a)])
+    return pi
+
+
+def V_from_Q(Q):
+    V = {}
+    for s in STATES:
+        if is_terminal(s):
+            V[s] = 0.0
+        else:
+            V[s] = max(Q[(s, a)] for a in ACTIONS)
+    return V
 
 
 def V_table(V):

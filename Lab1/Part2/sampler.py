@@ -1,6 +1,8 @@
 import random
+from typing import Dict
 
 from utils import (
+    ACTIONS,
     DELTA,
     GOAL,
     GOAL_REWARD,
@@ -57,3 +59,33 @@ def step_stochastic_sample(s, intended_a):
     reward = GOAL_REWARD if s_next == GOAL else STEP_COST
     done = s_next == GOAL
     return s_next, reward, done
+
+
+def epsilon_greedy_probs(Q, s, eps=EPS):
+    nA = len(ACTIONS)
+    qs = {a: Q[(s, a)] for a in ACTIONS}
+    max_q = max(qs.values())
+    greedy = [a for a, v in qs.items() if v == max_q]
+
+    probs = {a: eps / nA for a in ACTIONS}
+    greedy_mass = 1.0 - (nA - 1) * (eps / nA)
+
+    for a in greedy:
+        probs[a] += greedy_mass / len(greedy)
+
+    return probs
+
+
+def sample_from_probs(probs: Dict[str, float]):
+    r = random.random()
+    cumulative = 0.0
+    for a, p in probs.items():
+        cumulative += p
+        if r <= cumulative:
+            return a
+    raise ValueError("Cummulative probability should be 1.0")
+
+
+def select_action_epsilon_greedy(Q, s):
+    probs = epsilon_greedy_probs(Q, s, EPS)
+    return sample_from_probs(probs)
