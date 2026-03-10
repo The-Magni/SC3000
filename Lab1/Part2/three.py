@@ -40,13 +40,14 @@ def q_learning(alpha: float = 0.1, num_episodes: int = 50000, seed: int = 0):
                 V_s_next = max(Q[(s_next, a)] for a in ACTIONS)
             Q[(s, a)] = Q[(s, a)] + alpha * (reward + GAMMA * V_s_next - Q[(s, a)])
             s = s_next
+        print(f"iter {iter}")
+        print(V_table(V_from_Q(Q)))
     return Q
 
 
 if __name__ == "__main__":
-    Q = q_learning()
+    Q = q_learning(num_episodes=10000)
     pi_star = greedy_policy_from_Q(Q)
     V = V_from_Q(Q)
     print(V_table(V))
-    print(Q_table(Q))
     print(policy_table(pi_star))
