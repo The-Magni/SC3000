@@ -21,7 +21,7 @@ from utils import (
 
 def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
     random.seed(seed)
-    Q = defaultdict(float)
+    Q = defaultdict(lambda: -1e9)
     Returns = defaultdict(list)
     policy = {s: {a: 1.0 / len(ACTIONS) for a in ACTIONS} for s in STATES}
     # randomly generated policy
@@ -47,8 +47,8 @@ def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
                 multiplier *= GAMMA
             Returns[(s, a)].append(ret)
             Q[(s, a)] = sum(Returns[(s, a)]) / len(Returns[(s, a)])
-
-        for s, _ in visited:
+        visited_states = {s for s, _ in visited}
+        for s in visited_states:
             a_star = ACTIONS[0]
             for a in ACTIONS[1:]:
                 if Q[(s, a)] > Q[(s, a_star)]:
@@ -65,7 +65,7 @@ def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
 
 
 if __name__ == "__main__":
-    Q = monte_carlo_learning(num_episodes=50000)
+    Q = monte_carlo_learning(num_episodes=10000)
     pi = greedy_policy_from_Q(Q)
     V = V_from_Q(Q)
     print(policy_table(pi))
