@@ -21,7 +21,7 @@ from utils import (
 
 def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
     random.seed(seed)
-    Q = defaultdict(lambda: -1e9)
+    Q = {(s, a): random.random() * 1000 for s in STATES for a in ACTIONS}
     Returns = defaultdict(list)
     policy = {s: {a: 1.0 / len(ACTIONS) for a in ACTIONS} for s in STATES}
     # randomly generated policy

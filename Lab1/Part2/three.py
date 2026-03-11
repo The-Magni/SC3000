@@ -1,12 +1,11 @@
 import random
-from collections import defaultdict
 
 from sampler import EPS, sample_from_probs, step_stochastic_sample
 from utils import (
     ACTIONS,
     GAMMA,
     START,
-    Q_table,
+    STATES,
     V_from_Q,
     V_table,
     greedy_policy_from_Q,
@@ -17,7 +16,8 @@ from utils import (
 
 def q_learning(alpha: float = 0.1, num_episodes: int = 50000, seed: int = 0):
     random.seed(seed)
-    Q = defaultdict(float)
+    # randomly generate Q
+    Q = {(s, a): random.random() * 1000 for s in STATES for a in ACTIONS}
     for iter in range(num_episodes):
         s = START
         while not is_terminal(s):
