@@ -17,6 +17,23 @@ STEP_COST = -1
 GOAL_REWARD = 10
 ARROW = {"U": "↑", "D": "↓", "L": "←", "R": "→", None: "·"}
 
+def compare_policy_against_optimal(pi_opt, pi_test):
+    matches = 0
+    total = 0
+    mismatches = []
+
+    for s in STATES:
+        if is_terminal(s):
+            continue
+
+        total += 1
+        if pi_opt[s] == pi_test[s]:
+            matches += 1
+        else:
+            mismatches.append((s, pi_opt[s], pi_test[s]))
+
+    accuracy = matches / total
+    return matches, total, accuracy, mismatches
 
 def greedy_policy_from_Q(Q):
     pi = {}

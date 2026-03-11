@@ -1,5 +1,5 @@
 import random
-
+from one import value_iteration
 from sampler import EPS, sample_from_probs, step_stochastic_sample
 from utils import (
     ACTIONS,
@@ -11,6 +11,7 @@ from utils import (
     greedy_policy_from_Q,
     is_terminal,
     policy_table,
+    compare_policy_against_optimal
 )
 
 
@@ -40,14 +41,36 @@ def q_learning(alpha: float = 0.1, num_episodes: int = 50000, seed: int = 0):
                 V_s_next = max(Q[(s_next, a)] for a in ACTIONS)
             Q[(s, a)] = Q[(s, a)] + alpha * (reward + GAMMA * V_s_next - Q[(s, a)])
             s = s_next
-        print(f"iter {iter}")
-        print(V_table(V_from_Q(Q)))
+    print(f"Final value iteration of Q-Learning Policy:")
+    print(V_table(V_from_Q(Q)))
+    print()
     return Q
 
 
 if __name__ == "__main__":
+    # Optimal policy from Task 1
+    V_opt, pi_opt, _ = value_iteration()
+
+    # Learned policy from Task 3
     Q = q_learning(num_episodes=10000)
-    pi_star = greedy_policy_from_Q(Q)
-    V = V_from_Q(Q)
-    print(V_table(V))
-    print(policy_table(pi_star))
+    pi_q = greedy_policy_from_Q(Q)
+    V_q = V_from_Q(Q)
+
+    print("=== Q-Learning Policy ===")
+    print(policy_table(pi_q))
+    print()
+
+    print("=== Optimal Policy from Task 1 ===")
+    print(policy_table(pi_opt))
+    print()
+
+    matches, total, accuracy, mismatches = compare_policy_against_optimal(pi_opt, pi_q)
+
+    print(f"Policy agreement: {matches}/{total} = {accuracy:.2%}")
+
+    if len(mismatches) == 0:
+        print("Q-learning policy matches the optimal policy exactly.")
+    else:
+        print("States with different actions:")
+        for s, a_opt, a_q in mismatches:
+            print(f"{s}: optimal={a_opt}, q_learning={a_q}")

@@ -1,6 +1,7 @@
 import random
 from collections import defaultdict
 
+from one import value_iteration
 from sampler import (
     EPS,
     sample_from_probs,
@@ -16,6 +17,7 @@ from utils import (
     greedy_policy_from_Q,
     is_terminal,
     policy_table,
+    compare_policy_against_optimal
 )
 
 
@@ -59,13 +61,36 @@ def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
                 else:
                     policy[s][a] = EPS / len(ACTIONS)
 
-        print(f"iter {iter}")
-        print(V_table(V_from_Q(Q)))
+        # progress logging removed from inner loop (only final result printed later)
+    # after all episodes, display final iteration results
+    print(f"Final value iteration of Monte Carlo Policy:")
+    print(V_table(V_from_Q(Q)))
+    print()
     return Q
 
 
 if __name__ == "__main__":
+    V_star, pi_star, _ = value_iteration()
+
     Q = monte_carlo_learning(num_episodes=10000)
     pi = greedy_policy_from_Q(Q)
     V = V_from_Q(Q)
+
+    print("=== Monte Carlo Policy ===")
     print(policy_table(pi))
+    print()
+
+    print("=== Optimal Policy from Task 1 ===")
+    print(policy_table(pi_star))
+    print()
+
+    matches, total, accuracy, mismatches = compare_policy_against_optimal(pi_star, pi)
+
+    print(f"Policy agreement: {matches}/{total} = {accuracy:.2%}")
+
+    if len(mismatches) == 0:
+        print("Monte Carlo policy matches the optimal policy exactly.")
+    else:
+        print("States with different actions:")
+        for s, a_opt, a_mc in mismatches:
+            print(f"{s}: optimal={a_opt}, monte_carlo={a_mc}")
