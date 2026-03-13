@@ -62,7 +62,7 @@ def greedy_action_from_V(s, V):
 
 def value_iteration(theta=1e-10, max_iters=10000):
     V = {s: 0.0 for s in STATES}
-
+    iter_idx = 1
     for iter_idx in range(1, max_iters + 1):
         delta = 0.0
         V_new = V.copy()
@@ -114,7 +114,7 @@ def policy_iteration(theta=1e-10, max_policy_iters=10000):
             pi[s] = None
         else:
             pi[s] = "R"
-
+    iter_idx = 1
     for iter_idx in range(1, max_policy_iters + 1):
         V = policy_evaluation(pi, theta=theta)
 
@@ -144,7 +144,7 @@ def compare_policies(pi1, pi2):
     return mismatches
 
 
-if __name__ == "__main__":
+def main():
     print("=== Value Iteration ===")
     V_vi, pi_vi, vi_iters = value_iteration()
     print(f"Converged in {vi_iters} iterations")
@@ -166,3 +166,7 @@ if __name__ == "__main__":
         print("Policies differ at the following states:")
         for s, a_vi, a_pi in mismatches:
             print(f"{s}: VI={a_vi}, PI={a_pi}")
+
+
+if __name__ == "__main__":
+    main()

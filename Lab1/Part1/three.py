@@ -1,6 +1,6 @@
-import math
 import heapq
-from typing import Dict, List, Tuple, Optional
+import math
+from typing import Dict, List, Optional, Tuple
 
 from data import load_data
 
@@ -23,11 +23,16 @@ def haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     phi2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
     dlmb = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlmb / 2) ** 2
+    a = (
+        math.sin(dphi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(dlmb / 2) ** 2
+    )
     return 2.0 * EARTH_RADIUS_M * math.asin(math.sqrt(a))
 
 
-def make_haversine_distance_to_goal_heuristic(goal: str, Coord: Dict[str, List[int]], scale: float = 1e6):
+def make_haversine_distance_to_goal_heuristic(
+    goal: str, Coord: Dict[str, List[int]], scale: float = 1e6
+):
     goal_lat, goal_lon = coord_to_latlon_deg(Coord[goal], scale)
 
     def h(v: str) -> float:
@@ -39,10 +44,14 @@ def make_haversine_distance_to_goal_heuristic(goal: str, Coord: Dict[str, List[i
 
 def dominates(a_dist: float, a_energy: int, b_dist: float, b_energy: int) -> bool:
     # a dominates b if no worse in both and strictly better in at least one
-    return (a_dist <= b_dist and a_energy <= b_energy) and (a_dist < b_dist or a_energy < b_energy)
+    return (a_dist <= b_dist and a_energy <= b_energy) and (
+        a_dist < b_dist or a_energy < b_energy
+    )
 
 
-def reconstruct_path_from_label_ids(pred: Dict[int, Optional[int]], node_of: Dict[int, str], goal_id: int) -> List[str]:
+def reconstruct_path_from_label_ids(
+    pred: Dict[int, Optional[int]], node_of: Dict[int, str], goal_id: int
+) -> List[str]:
     path = []
     cur: Optional[int] = goal_id
     while cur is not None:
@@ -129,7 +138,7 @@ def astar_rcspp_multilabel(
 
             # if any existing label dominates (nd,ne), discard
             dominated = False
-            for (d_old, e_old) in labels[v]:
+            for d_old, e_old in labels[v]:
                 if dominates(d_old, e_old, nd, ne):
                     dominated = True
                     break
@@ -138,7 +147,7 @@ def astar_rcspp_multilabel(
 
             # remove labels dominated by the new label
             new_list = []
-            for (d_old, e_old) in labels[v]:
+            for d_old, e_old in labels[v]:
                 if not dominates(nd, ne, d_old, e_old):
                     new_list.append((d_old, e_old))
             new_list.append((nd, ne))
@@ -175,7 +184,7 @@ if __name__ == "__main__":
         print("Shortest distance: inf.")
         print("Total energy cost: 0.")
     else:
-        shortest_path_str = "->".join(path)
+        shortest_path_str = r"\rightarrow".join(path)
         print(f"Shortest path: {shortest_path_str}.")
         print(f"Shortest distance: {shortest_dist}.")
         print(f"Total energy cost: {energy_cost}.")

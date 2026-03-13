@@ -9,13 +9,17 @@ if __name__ == "__main__":
     end_node = "50"
     total_energy_budget = 287932
     while True:
-        option = int(
-            input("""Please choose 1,2, or 3\n
-                1. Run part 1.\n
-                2. Run part 2.\n
-                3. Run part 3.\n
-                Any other key: Exit application.\n""")
-        )
+        try:
+            option = int(
+                input("""Please choose 1,2, or 3\n
+                    1. Run part 1.\n
+                    2. Run part 2.\n
+                    3. Run part 3.\n
+                    Any other key: Exit application.\n""")
+            )
+        except ValueError:
+            print("Exited")
+            break
         match option:
             case 1:
                 pi, shortest_dist, energy_cost = ucs(
