@@ -7,6 +7,7 @@ from utils import (
     STATES,
     STEP_COST,
     V_table,
+    compare_policies,
     is_terminal,
     policy_table,
 )
@@ -134,14 +135,6 @@ def policy_iteration(theta=1e-10, max_policy_iters=10000):
 
     V = policy_evaluation(pi, theta=theta)
     return V, pi, iter_idx
-
-
-def compare_policies(pi1, pi2):
-    mismatches = []
-    for s in STATES:
-        if pi1[s] != pi2[s]:
-            mismatches.append((s, pi1[s], pi2[s]))
-    return mismatches
 
 
 def main():

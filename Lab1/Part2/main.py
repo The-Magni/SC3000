@@ -20,6 +20,7 @@ if __name__ == "__main__":
                 case 3:
                     three.main()
                 case _:
+                    print("Exited")
                     break
         except ValueError:
             print("Exited")

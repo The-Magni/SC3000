@@ -1,7 +1,6 @@
 import random
 from collections import defaultdict
 
-import matplotlib.pyplot as plt
 from one import value_iteration
 from sampler import (
     EPS,
@@ -71,19 +70,13 @@ def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
 def main():
     V_star, pi_star, _ = value_iteration()
     num_episodes = 10000
-    Q, avg_deltas = monte_carlo_learning(num_episodes=10000)
+    Q, _ = monte_carlo_learning(num_episodes=num_episodes)
     pi = greedy_policy_from_Q(Q)
     V = V_from_Q(Q)
     print(V_table(V))
     print("=== Monte Carlo Policy ===")
     print(policy_table(pi))
     print()
-    # plotting
-    plt.plot(range(num_episodes), avg_deltas)
-    plt.ylim(-2, 2)
-    plt.xlabel("Epoch")
-    plt.ylabel("Average change in Q values")
-    plt.show()
 
     print("=== Optimal Policy from Task 1 ===")
     print(policy_table(pi_star))
