@@ -48,6 +48,9 @@ def q_learning(alpha: float = 0.1, num_episodes: int = 50000, seed: int = 0):
     return Q, avg_deltas
 
 
+SEP = "=" * 50
+
+
 def main():
     # Optimal policy from Task 1
     V_opt, pi_opt, _ = value_iteration()
@@ -61,37 +64,51 @@ def main():
     pi_q = greedy_policy_from_Q(Q)
     pi_montecarlo = greedy_policy_from_Q(Q_montecarlo)
     V_q = V_from_Q(Q)
+
+    print(f"\n{SEP}")
+    print("  Value Table (Q-Learning)")
+    print(SEP)
     print(V_table(V_q))
-    print("=== Q-Learning Policy ===")
+
+    print(f"\n{SEP}")
+    print("  Q-Learning Policy")
+    print(SEP)
     print(policy_table(pi_q))
-    print()
 
-    print("=== Monte Carlo Policy ===")
+    print(f"\n{SEP}")
+    print("  Monte Carlo Policy")
+    print(SEP)
     print(policy_table(pi_montecarlo))
-    print()
 
-    print("=== Optimal Policy from Task 1 ===")
+    print(f"\n{SEP}")
+    print("  Optimal Policy (Task 1 - Value Iteration)")
+    print(SEP)
     print(policy_table(pi_opt))
-    print()
 
+    print(f"\n{SEP}")
+    print("  Q-Learning vs Optimal Policy")
+    print(SEP)
     matches, total, accuracy, mismatches = compare_policy_against_optimal(pi_opt, pi_q)
-
-    print(f"Policy agreement: {matches}/{total} = {accuracy:.2%}")
+    print(f"  Policy agreement : {matches} / {total}  ({accuracy:.2%})")
 
     if len(mismatches) == 0:
-        print("Q-learning policy matches the optimal policy exactly.")
+        print("  [MATCH] Q-learning policy matches the optimal policy exactly.")
     else:
-        print("States with different actions:")
+        print(f"  [DIFF] Diverging states ({len(mismatches)}):")
         for s, a_opt, a_q in mismatches:
-            print(f"{s}: optimal={a_opt}, q_learning={a_q}")
+            print(f"     - State {str(s):<10} | optimal={a_opt:<6} | q_learning={a_q}")
 
+    print(f"\n{SEP}")
+    print("  Q-Learning vs Monte Carlo Policy")
+    print(SEP)
     mismatches = compare_policies(pi_q, pi_montecarlo)
     if len(mismatches) == 0:
-        print("Q Learning and Monte Carlo produced the same optimal policy.")
+        print("  [MATCH] Q-Learning and Monte Carlo produced the same optimal policy.")
     else:
-        print("Monte Carlo differ at the following states:")
+        print(f"  [DIFF] Diverging states ({len(mismatches)}):")
         for s, a_ql, a_mc in mismatches:
-            print(f"{s}: QL={a_ql}, MC={a_mc}")
+            print(f"     - State {str(s):<10} | Q-Learning={a_ql:<6} | Monte Carlo={a_mc}")
+    print(SEP)
 
     # plotting
     plt.plot(range(num_episodes), avg_deltas, label="Q Learning")

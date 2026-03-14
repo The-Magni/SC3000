@@ -67,30 +67,44 @@ def monte_carlo_learning(num_episodes: int = 10000, seed: int = 0):
     return Q, avg_deltas
 
 
+SEP = "=" * 50
+
+
 def main():
     V_star, pi_star, _ = value_iteration()
     num_episodes = 10000
     Q, _ = monte_carlo_learning(num_episodes=num_episodes)
     pi = greedy_policy_from_Q(Q)
     V = V_from_Q(Q)
+
+    print(f"\n{SEP}")
+    print("  Value Table (Monte Carlo)")
+    print(SEP)
     print(V_table(V))
-    print("=== Monte Carlo Policy ===")
+
+    print(f"\n{SEP}")
+    print("  Monte Carlo Policy")
+    print(SEP)
     print(policy_table(pi))
-    print()
 
-    print("=== Optimal Policy from Task 1 ===")
+    print(f"\n{SEP}")
+    print("  Optimal Policy (Task 1 - Value Iteration)")
+    print(SEP)
     print(policy_table(pi_star))
-    print()
-    matches, total, accuracy, mismatches = compare_policy_against_optimal(pi_star, pi)
 
-    print(f"Policy agreement: {matches}/{total} = {accuracy:.2%}")
+    print(f"\n{SEP}")
+    print("  Policy Comparison")
+    print(SEP)
+    matches, total, accuracy, mismatches = compare_policy_against_optimal(pi_star, pi)
+    print(f"  Policy agreement : {matches} / {total}  ({accuracy:.2%})")
 
     if len(mismatches) == 0:
-        print("Monte Carlo policy matches the optimal policy exactly.")
+        print("  [MATCH] Monte Carlo policy matches the optimal policy exactly.")
     else:
-        print("States with different actions:")
+        print(f"  [DIFF] Diverging states ({len(mismatches)}):")
         for s, a_opt, a_mc in mismatches:
-            print(f"{s}: optimal={a_opt}, monte_carlo={a_mc}")
+            print(f"     - State {str(s):<10} | optimal={a_opt:<6} | monte_carlo={a_mc}")
+    print(SEP)
 
 
 if __name__ == "__main__":
