@@ -1,0 +1,9 @@
+# SWI-Prolog temporary and saved files
+*.qlf
+*.saved_state
+tmon.out
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
